@@ -1,3 +1,4 @@
+```js
 const express = require("express");
 const path = require("path");
 const helmet = require("helmet");
@@ -42,14 +43,14 @@ const app = express();
 
 app.use(helmet());
 
-
 // CORS Middleware
 app.use((req, res, next) => {
     const allowedOrigins = [
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:5175",
-        "http://localhost:5176"
+        "http://localhost:5176",
+        "https://workflowpro-frontend-three.vercel.app"
     ];
 
     const origin = req.headers.origin;
@@ -75,10 +76,8 @@ app.use((req, res, next) => {
     next();
 });
 
-
 app.use(express.json());
 app.use(sanitizeMiddleware);
-
 
 app.use(
     "/uploads",
@@ -86,7 +85,6 @@ app.use(
     blockSuperAdmin,
     express.static(path.join(__dirname, "../uploads"))
 );
-
 
 app.use("/api/auth", authRoutes);
 app.use("/api/company", companyRoutes);
@@ -109,7 +107,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/self-service", selfServiceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-
 app.use(errorHandler);
 
 module.exports = app;
+```
