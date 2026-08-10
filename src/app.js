@@ -1,4 +1,4 @@
-```js
+
 const express = require("express");
 const path = require("path");
 const helmet = require("helmet");
@@ -110,4 +110,4 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use(errorHandler);
 
 module.exports = app;
-```
+
