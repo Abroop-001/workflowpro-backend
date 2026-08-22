@@ -1,4 +1,5 @@
 const performanceService = require("./performance.service");
+const Employee = require("../employee/employee.model");
 
 const createPerformance = async (
     req,
@@ -143,6 +144,15 @@ const updateGoalStatus = async (
     next
 )=>{
     try{
+        if (req.user.role === 'EMPLOYEE') {
+            const performance = await performanceService.getPerformanceById(req.params.id, req.user.company);
+            if (!performance.employee || performance.employee.user?.toString() !== req.user._id.toString()) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Access denied: You can only update your own performance review goals"
+                });
+            }
+        }
         const performance = await performanceService.updateGoalStatus(
 
             req.params.id,
@@ -181,6 +191,15 @@ const getEmployeePerformance = async (
     next
 )=>{
     try{
+        if (req.user.role === 'EMPLOYEE') {
+            const employee = await Employee.findOne({ user: req.user._id, company: req.user.company, isDeleted: false });
+            if (!employee || employee._id.toString() !== req.params.employeeId) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Access denied: You can only view your own performance reviews"
+                });
+            }
+        }
         const performances = await performanceService.getEmployeePerformance(
             req.params.employeeId,
             req.user.company
@@ -209,6 +228,14 @@ const getPerformanceById = async (
             req.params.id,
             req.user.company
         );
+        if (req.user.role === 'EMPLOYEE') {
+            if (!performance.employee || performance.employee.user?.toString() !== req.user._id.toString()) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Access denied: You can only view your own performance review"
+                });
+            }
+        }
         res.status(200).json({
             success:true,
             data:{
@@ -220,11 +247,58 @@ const getPerformanceById = async (
         next(error);
     }
 };
+
+const updatePerformance = async (
+    req,
+    res,
+    next
+)=>{
+    try{
+        const performance = await performanceService.updatePerformance(
+            req.params.id,
+            req.body,
+            req.user.company
+        );
+        res.status(200).json({
+            success:true,
+            message:"Performance review updated successfully",
+            data:{
+                performance
+            }
+        });
+    }
+    catch(error){
+        next(error);
+    }
+};
+
+const deletePerformance = async (
+    req,
+    res,
+    next
+)=>{
+    try{
+        await performanceService.deletePerformance(
+            req.params.id,
+            req.user.company
+        );
+        res.status(200).json({
+            success:true,
+            message:"Performance review deleted successfully"
+        });
+    }
+    catch(error){
+        next(error);
+    }
+};
+
 module.exports = {
     createPerformance,
     submitSelfReview,
     submitManagerReview,
     updateGoalStatus,
     getEmployeePerformance,
-    getPerformanceById
+    getPerformanceById,
+    updatePerformance,
+    deletePerformance
 };

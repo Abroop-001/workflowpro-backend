@@ -12,7 +12,8 @@ const {
     createPerformanceSchema,
     submitSelfReviewSchema,
     submitManagerReviewSchema,
-    updateGoalStatusSchema
+    updateGoalStatusSchema,
+    updatePerformanceSchema
 } = require("./performance.validation");
 
 
@@ -36,7 +37,8 @@ router.get(
     authorize(
         "HR",
         "COMPANY_ADMIN",
-        "MANAGER"
+        "MANAGER",
+        "EMPLOYEE"
     ),
     performanceController.getEmployeePerformance
 );
@@ -96,6 +98,28 @@ router.patch(
     performanceController.updateGoalStatus
 );
 
+
+router.patch(
+    "/:id",
+    protect,
+    authorize(
+        "HR",
+        "COMPANY_ADMIN"
+    ),
+    validate(updatePerformanceSchema),
+    performanceController.updatePerformance
+);
+
+
+router.delete(
+    "/:id",
+    protect,
+    authorize(
+        "HR",
+        "COMPANY_ADMIN"
+    ),
+    performanceController.deletePerformance
+);
 
 
 module.exports = router;

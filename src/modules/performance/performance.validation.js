@@ -124,12 +124,52 @@ const updateGoalStatusSchema = Joi.object({
 .unknown(false);
 
 
+const updatePerformanceSchema = Joi.object({
+    reviewPeriod:Joi.string()
+        .trim()
+        .pattern(/^\d{4}-(Q[1-4])$/)
+        .messages({
+            "string.pattern.base":
+            "Review period must be like 2026-Q1"
+        }),
 
+    goals:Joi.array()
+        .items(
+            Joi.object({
+                title:Joi.string()
+                    .trim()
+                    .max(100)
+                    .required(),
+
+                description:Joi.string()
+                    .trim()
+                    .max(500)
+                    .allow(""),
+
+                targetDate:Joi.date()
+                    .optional(),
+
+                status:Joi.string()
+                    .valid(
+                        "PENDING",
+                        "IN_PROGRESS",
+                        "COMPLETED"
+                    )
+                    .default("PENDING")
+            })
+            .unknown(false)
+        )
+        .min(1)
+        .max(20)
+})
+.min(1)
+.unknown(false);
 
 
 module.exports={
     createPerformanceSchema,
     submitSelfReviewSchema,
     submitManagerReviewSchema,
-    updateGoalStatusSchema
+    updateGoalStatusSchema,
+    updatePerformanceSchema
 };

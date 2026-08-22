@@ -39,7 +39,11 @@ const createShiftSchema=Joi.object({
 
 
     isNightShift:Joi.boolean()
-        .default(false)
+        .default(false),
+
+    status:Joi.string()
+        .valid("ACTIVE", "INACTIVE")
+        .default("ACTIVE")
 
 
 }).unknown(false);
@@ -77,7 +81,10 @@ const updateShiftSchema=Joi.object({
         .min(0),
 
 
-    isNightShift:Joi.boolean()
+    isNightShift:Joi.boolean(),
+
+    status:Joi.string()
+        .valid("ACTIVE", "INACTIVE")
 
 
 })

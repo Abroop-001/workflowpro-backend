@@ -259,6 +259,14 @@ const performanceSchema = new mongoose.Schema(
 
         ref:"User"
 
+    },
+
+    isDeleted:{
+
+        type:Boolean,
+
+        default:false
+
     }
 
 

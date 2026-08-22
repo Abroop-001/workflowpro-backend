@@ -93,10 +93,29 @@ const deactivateShift = async(req,res,next)=>{
 };
 
 
+const deleteShift = async(req,res,next)=>{
+    try{
+        await shiftService.deleteShift(
+            req.params.id,
+            req.user
+        );
+
+        res.status(200).json({
+            success:true,
+            message:"Shift deleted successfully"
+        });
+
+    }catch(error){
+        next(error);
+    }
+};
+
+
 module.exports={
     createShift,
     getCompanyShifts,
     getShiftById,
     updateShift,
-    deactivateShift
+    deactivateShift,
+    deleteShift
 };

@@ -70,4 +70,15 @@ router.patch(
 );
 
 
+router.delete(
+    "/:id",
+    protect,
+    authorize(
+        "HR",
+        "COMPANY_ADMIN"
+    ),
+    shiftController.deleteShift
+);
+
+
 module.exports = router;

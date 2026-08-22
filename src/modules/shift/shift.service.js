@@ -213,6 +213,30 @@ const deactivateShift=async(
 };
 
 
+const deleteShift=async(
+    shiftId,
+    currentUser
+)=>{
+
+    const shift=await Shift.findOne({
+        _id:shiftId,
+        company:currentUser.company,
+        isDeleted:false
+    });
+
+    if(!shift){
+        throw new AppError(
+            "Shift not found",
+            404
+        );
+    }
+
+    shift.isDeleted=true;
+    await shift.save();
+
+    return shift;
+};
+
 
 module.exports={
 
@@ -224,6 +248,8 @@ module.exports={
 
     updateShift,
 
-    deactivateShift
+    deactivateShift,
+
+    deleteShift
 
 };

@@ -12,14 +12,21 @@ dns.setServers(["8.8.8.8" , "1.1.1.1"])
 // Validate Environment Variables
 validateEnv();
 
-// Connect Database then run one-time bootstrap
-connectDatabase().then(() => bootstrapAdmin());
-
+// Connect Database, run one-time bootstrap, then start HTTP server
 const PORT = process.env.PORT || 5000;
+let server;
 
-const server = app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+connectDatabase()
+    .then(() => bootstrapAdmin())
+    .then(() => {
+        server = app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error("Startup failed:", err.message);
+        process.exit(1);
+    });
 
 // Graceful Shutdown Handling
 const handleShutdown = (signal) => {

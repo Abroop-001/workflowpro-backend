@@ -43,7 +43,9 @@ const createPerformance = async (
 
         company:companyId,
 
-        reviewPeriod:data.reviewPeriod
+        reviewPeriod:data.reviewPeriod,
+
+        isDeleted:false
 
     });
 
@@ -66,7 +68,9 @@ const createPerformance = async (
 
         company:companyId,
 
-        createdBy:userId
+        createdBy:userId,
+
+        status:"SELF_REVIEW"
 
     });
 
@@ -84,11 +88,13 @@ const submitSelfReview = async (
 )=>{
 
 
-    const performance = await Performance.findById(
+    const performance = await Performance.findOne({
 
-        performanceId
+        _id:performanceId,
 
-    )
+        isDeleted:false
+
+    })
 
     .populate(
 
@@ -155,7 +161,9 @@ const submitManagerReview = async (
 
         _id:performanceId,
 
-        company:companyId
+        company:companyId,
+
+        isDeleted:false
 
     });
 
@@ -226,7 +234,9 @@ const updateGoalStatus = async (
 
         _id:performanceId,
 
-        company:companyId
+        company:companyId,
+
+        isDeleted:false
 
     });
     if(!performance){
@@ -277,7 +287,9 @@ const getEmployeePerformance = async (
 
         employee:employeeId,
 
-        company:companyId
+        company:companyId,
+
+        isDeleted:false
 
     })
 
@@ -300,7 +312,9 @@ const getPerformanceById = async (
 
         _id:id,
 
-        company:companyId
+        company:companyId,
+
+        isDeleted:false
 
     })
 
@@ -321,6 +335,60 @@ const getPerformanceById = async (
     }
     return performance;
 };
+
+const updatePerformance = async (
+    id,
+    updateData,
+    companyId
+)=>{
+    const performance = await Performance.findOne({
+        _id:id,
+        company:companyId,
+        isDeleted:false
+    });
+    if(!performance){
+        throw new AppError(
+            "Performance record not found",
+            404
+        );
+    }
+    if (updateData.reviewPeriod) {
+        performance.reviewPeriod = updateData.reviewPeriod;
+    }
+    if (updateData.goals) {
+        performance.goals = updateData.goals;
+    }
+    await performance.save();
+    return performance;
+};
+
+const deletePerformance = async (
+    id,
+    companyId
+)=>{
+    const performance = await Performance.findOne({
+        _id:id,
+        company:companyId,
+        isDeleted:false
+    });
+    if(!performance){
+        throw new AppError(
+            "Performance record not found",
+            404
+        );
+    }
+    performance.isDeleted = true;
+    await performance.save();
+    return performance;
+};
+
 module.exports = {
-    createPerformance, submitSelfReview,  submitManagerReview, updateGoalStatus, getEmployeePerformance, getPerformanceById
+    createPerformance,
+    submitSelfReview,
+    submitManagerReview,
+    updateGoalStatus,
+    getEmployeePerformance,
+    getPerformanceById,
+    updatePerformance,
+    deletePerformance
 };
