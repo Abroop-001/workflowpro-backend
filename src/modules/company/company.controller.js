@@ -1,4 +1,5 @@
 const companyService = require("./company.service");
+const { logAction } = require("../../utils/auditLogger");
 
 const createCompany = async(req,res,next)=>{
     try{
@@ -6,6 +7,15 @@ const createCompany = async(req,res,next)=>{
             req.body,
             req.user.id
         );
+
+        await logAction(req, {
+            action: "CREATE",
+            module: "COMPANY",
+            description: `Created new company: ${company.name}`,
+            targetId: company._id,
+            companyId: company._id,
+            newData: req.body
+        });
 
         res.status(201).json({
             success:true,
@@ -41,6 +51,15 @@ const updateCompany = async(req,res,next)=>{
             req.user
         );
 
+        await logAction(req, {
+            action: "UPDATE",
+            module: "COMPANY",
+            description: `Updated company details: ${company.name}`,
+            targetId: company._id,
+            companyId: company._id,
+            newData: req.body
+        });
+
         res.status(200).json({
             success:true,
             message:"Company updated successfully",
@@ -57,6 +76,14 @@ const deactivateCompany = async(req,res,next)=>{
             req.params.id,
             req.user
         );
+
+        await logAction(req, {
+            action: "DELETE",
+            module: "COMPANY",
+            description: `Deactivated company: ${company.name}`,
+            targetId: company._id,
+            companyId: company._id
+        });
 
         res.status(200).json({
             success:true,
@@ -87,6 +114,14 @@ const activateCompany = async(req,res,next)=>{
             req.params.id,
             req.user
         );
+
+        await logAction(req, {
+            action: "UPDATE",
+            module: "COMPANY",
+            description: `Activated company: ${company.name}`,
+            targetId: company._id,
+            companyId: company._id
+        });
 
         res.status(200).json({
             success:true,

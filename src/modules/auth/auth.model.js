@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema({
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
+    },
+    mustChangePassword:{
+        type:Boolean,
+        default:false
     }
 },{
     timestamps:true

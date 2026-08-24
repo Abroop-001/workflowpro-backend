@@ -1,4 +1,5 @@
 const payrollService = require("./payroll.service");
+const { logAction } = require("../../utils/auditLogger");
 
 const createPayroll = async (req,res,next)=>{
     try{
@@ -7,6 +8,14 @@ const createPayroll = async (req,res,next)=>{
             req.user.company,
             req.user.id
         );
+
+        await logAction(req, {
+            action: "GENERATE",
+            module: "PAYROLL",
+            description: `Generated payroll sheet for month ${payroll.month}/${payroll.year}`,
+            targetId: payroll._id,
+            newData: req.body
+        });
 
         res.status(201).json({
             success:true,
@@ -79,6 +88,13 @@ const approvePayroll = async(req,res,next)=>{
             req.user.id
         );
 
+        await logAction(req, {
+            action: "APPROVE",
+            module: "PAYROLL",
+            description: `Approved payroll sheet for ${payroll.month}/${payroll.year}`,
+            targetId: payroll._id
+        });
+
         res.json({
             success:true,
             message:"Payroll approved successfully",
@@ -98,6 +114,14 @@ const markPayrollPaid = async(req,res,next)=>{
             req.user.id
         );
 
+        await logAction(req, {
+            action: "UPDATE",
+            module: "PAYROLL",
+            description: `Marked payroll sheet as PAID for ${payroll.month}/${payroll.year}`,
+            targetId: payroll._id,
+            newData: req.body
+        });
+
         res.json({
             success:true,
             message:"Payroll marked as paid",
@@ -115,6 +139,13 @@ const cancelPayroll = async(req,res,next)=>{
             req.user.company,
             req.user.id
         );
+
+        await logAction(req, {
+            action: "CANCEL",
+            module: "PAYROLL",
+            description: `Cancelled payroll sheet for ${payroll.month}/${payroll.year}`,
+            targetId: payroll._id
+        });
 
         res.json({
             success:true,

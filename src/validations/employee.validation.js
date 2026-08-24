@@ -91,6 +91,12 @@ const createEmployeeSchema = Joi.object({
 
 const updateEmployeeSchema = Joi.object({
 
+    employeeId: Joi.string()
+        .trim()
+        .uppercase()
+        .pattern(/^[A-Z0-9-]+$/)
+        .max(20),
+
     personalInfo: personalInfoSchema,
 
     jobInfo: jobInfoSchema,

@@ -12,6 +12,7 @@ router.get(
     "/",
     protect,
     authorize(
+        "SUPER_ADMIN",
         "COMPANY_ADMIN",
         "HR"
     ),
@@ -23,6 +24,7 @@ router.get(
     "/user/:userId",
     protect,
     authorize(
+        "SUPER_ADMIN",
         "COMPANY_ADMIN"
     ),
     auditLogController.getUserActivity
@@ -33,6 +35,7 @@ router.get(
     "/module/:module",
     protect,
     authorize(
+        "SUPER_ADMIN",
         "COMPANY_ADMIN",
         "HR"
     ),

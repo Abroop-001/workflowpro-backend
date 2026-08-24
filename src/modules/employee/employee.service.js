@@ -2,6 +2,7 @@ const Employee = require("./employee.model");
 const Department = require("../department/department.model");
 const User = require("../auth/auth.model");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const AppError = require("../../utils/AppError");
 
 
@@ -84,6 +85,7 @@ const createEmployee = async(
     );
 
     let userId = null;
+    let temporaryPassword = null;
     if (employeeData.personalInfo?.email) {
         const normalizedEmail = employeeData.personalInfo.email.toLowerCase().trim();
         const existingUser = await User.findOne({ email: normalizedEmail });
@@ -91,7 +93,8 @@ const createEmployee = async(
             throw new AppError("A user with this email address already exists", 409);
         }
 
-        const hashedPassword = await bcrypt.hash("Password@123", 12);
+        temporaryPassword = `Temp@${crypto.randomBytes(4).toString("hex")}`;
+        const hashedPassword = await bcrypt.hash(temporaryPassword, 12);
         const user = await User.create({
             name: `${employeeData.personalInfo.firstName} ${employeeData.personalInfo.lastName || ""}`.trim(),
             email: normalizedEmail,
@@ -100,6 +103,7 @@ const createEmployee = async(
             company: companyId,
             status: "ACTIVE",
             isEmailVerified: true,
+            mustChangePassword: true,
             createdBy: currentUser.id
         });
         userId = user._id;
@@ -114,7 +118,7 @@ const createEmployee = async(
         isDeleted: false
     });
 
-    return employee;
+    return { employee, temporaryPassword };
 };
 
 const getCompanyEmployees = async(

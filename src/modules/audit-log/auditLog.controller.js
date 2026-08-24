@@ -3,9 +3,13 @@ const auditLogService=require("./auditLog.service");
 
 const getAuditLogs=async(req,res,next)=>{
     try{
+        const isSuperAdmin = req.user.role === "SUPER_ADMIN";
+        const companyId = isSuperAdmin ? null : req.user.company;
+
         const result=await auditLogService.getAuditLogs(
-            req.user.company,
-            req.query
+            companyId,
+            req.query,
+            isSuperAdmin
         );
 
         res.status(200).json({
@@ -21,9 +25,12 @@ const getAuditLogs=async(req,res,next)=>{
 
 const getUserActivity=async(req,res,next)=>{
     try{
+        const isSuperAdmin = req.user.role === "SUPER_ADMIN";
+        const companyId = isSuperAdmin ? req.query.company || null : req.user.company;
+
         const logs=await auditLogService.getUserActivity(
             req.params.userId,
-            req.user.company
+            companyId
         );
 
         res.status(200).json({
@@ -39,9 +46,12 @@ const getUserActivity=async(req,res,next)=>{
 
 const getModuleHistory=async(req,res,next)=>{
     try{
+        const isSuperAdmin = req.user.role === "SUPER_ADMIN";
+        const companyId = isSuperAdmin ? req.query.company || null : req.user.company;
+
         const logs=await auditLogService.getModuleHistory(
             req.params.module,
-            req.user.company
+            companyId
         );
 
         res.status(200).json({

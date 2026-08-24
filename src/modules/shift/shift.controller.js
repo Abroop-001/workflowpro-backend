@@ -1,4 +1,5 @@
 const shiftService = require("./shift.service");
+const { logAction } = require("../../utils/auditLogger");
 
 const createShift = async(req,res,next)=>{
     try{
@@ -6,6 +7,14 @@ const createShift = async(req,res,next)=>{
             req.body,
             req.user
         );
+
+        await logAction(req, {
+            action: "CREATE",
+            module: "SHIFT",
+            description: `Created shift schedule: ${shift.name} (${shift.startTime} - ${shift.endTime})`,
+            targetId: shift._id,
+            newData: req.body
+        });
 
         res.status(201).json({
             success:true,
@@ -62,6 +71,14 @@ const updateShift = async(req,res,next)=>{
             req.user
         );
 
+        await logAction(req, {
+            action: "UPDATE",
+            module: "SHIFT",
+            description: `Updated shift schedule: ${shift.name}`,
+            targetId: shift._id,
+            newData: req.body
+        });
+
         res.status(200).json({
             success:true,
             message:"Shift updated successfully",
@@ -81,6 +98,13 @@ const deactivateShift = async(req,res,next)=>{
             req.user
         );
 
+        await logAction(req, {
+            action: "DELETE",
+            module: "SHIFT",
+            description: `Deactivated shift schedule: ${shift.name}`,
+            targetId: shift._id
+        });
+
         res.status(200).json({
             success:true,
             message:"Shift deactivated successfully",
@@ -95,6 +119,12 @@ const deactivateShift = async(req,res,next)=>{
 
 const deleteShift = async(req,res,next)=>{
     try{
+        await logAction(req, {
+            action: "DELETE",
+            module: "SHIFT",
+            description: `Deleted shift ID: ${req.params.id}`
+        });
+
         await shiftService.deleteShift(
             req.params.id,
             req.user

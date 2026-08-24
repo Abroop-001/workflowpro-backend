@@ -1,4 +1,5 @@
 const departmentService = require("./department.service");
+const { logAction } = require("../../utils/auditLogger");
 
 const createDepartment = async(req,res,next)=>{
     try{
@@ -6,6 +7,14 @@ const createDepartment = async(req,res,next)=>{
             req.body,
             req.user
         );
+
+        await logAction(req, {
+            action: "CREATE",
+            module: "DEPARTMENT",
+            description: `Created department: ${department.name}`,
+            targetId: department._id,
+            newData: req.body
+        });
 
         res.status(201).json({
             success:true,
@@ -62,6 +71,14 @@ const updateDepartment = async(req,res,next)=>{
             req.user
         );
 
+        await logAction(req, {
+            action: "UPDATE",
+            module: "DEPARTMENT",
+            description: `Updated department: ${department.name}`,
+            targetId: department._id,
+            newData: req.body
+        });
+
         res.status(200).json({
             success:true,
             message:"Department updated successfully",
@@ -80,6 +97,13 @@ const deactivateDepartment = async(req,res,next)=>{
             req.params.id,
             req.user
         );
+
+        await logAction(req, {
+            action: "DELETE",
+            module: "DEPARTMENT",
+            description: `Deactivated department: ${department.name}`,
+            targetId: department._id
+        });
 
         res.status(200).json({
             success:true,

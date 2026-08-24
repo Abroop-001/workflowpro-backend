@@ -18,7 +18,6 @@ const leaveBalanceRoutes = require("./modules/leave-balance/leaveBalance.routes"
 const shiftRoutes = require("./modules/shift/shift.routes");
 const payslipRoutes = require("./modules/payslip/payslip.routes");
 const performanceRoutes = require("./modules/performance/performance.routes");
-const recruitmentRoutes = require("./modules/recruitment/recruitment.routes");
 const documentRoutes = require("./modules/document/document.routes");
 const notificationRoutes = require("./modules/notification/notification.routes");
 const auditLogRoutes = require("./modules/audit-log/auditLog.routes");
@@ -99,7 +98,6 @@ app.use("/api/shifts", shiftRoutes);
 app.use("/api/payslips", payslipRoutes);
 app.use("/api/performance", performanceRoutes);
 app.use("/api/recruitment/interviews", interviewRoutes);
-app.use("/api/recruitment", recruitmentRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/audit-logs", auditLogRoutes);

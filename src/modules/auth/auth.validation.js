@@ -39,7 +39,26 @@ const loginValidation = Joi.object({
         .required()
 });
 
+const changePasswordValidation = Joi.object({
+    newPassword: Joi.string()
+        .min(8)
+        .max(30)
+        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/)
+        .required()
+        .messages({
+            "string.pattern.base":
+            "Password must contain uppercase, lowercase, number and special character."
+        }),
+    confirmPassword: Joi.string()
+        .valid(Joi.ref('newPassword'))
+        .required()
+        .messages({
+            "any.only": "Confirm password must match new password."
+        })
+});
+
 module.exports = {
     companyRegisterValidation,
-    loginValidation
+    loginValidation,
+    changePasswordValidation
 };

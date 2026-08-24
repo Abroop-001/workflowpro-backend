@@ -1,5 +1,6 @@
 const performanceService = require("./performance.service");
 const Employee = require("../employee/employee.model");
+const { logAction } = require("../../utils/auditLogger");
 
 const createPerformance = async (
     req,
@@ -12,6 +13,13 @@ const createPerformance = async (
             req.user.company,
             req.user._id
         );
+        await logAction(req, {
+            action: "CREATE",
+            module: "PERFORMANCE",
+            description: `Configured performance review cycle for period: ${performance.reviewPeriod}`,
+            targetId: performance._id,
+            newData: req.body
+        });
         res.status(201).json({
             success:true,
             message:"Performance review created successfully",
@@ -54,6 +62,13 @@ const submitSelfReview = async (
             req.user._id
 
         );
+        await logAction(req, {
+            action: "UPDATE",
+            module: "PERFORMANCE",
+            description: `Submitted self-review evaluation for cycle period: ${performance.reviewPeriod}`,
+            targetId: performance._id,
+            newData: req.body
+        });
         res.status(200).json({
 
             success:true,
@@ -111,6 +126,13 @@ const submitManagerReview = async (
 
 
 
+        await logAction(req, {
+            action: "UPDATE",
+            module: "PERFORMANCE",
+            description: `Submitted manager review evaluation for cycle period: ${performance.reviewPeriod}`,
+            targetId: performance._id,
+            newData: req.body
+        });
         res.status(200).json({
 
             success:true,
@@ -164,6 +186,13 @@ const updateGoalStatus = async (
             req.user.company
 
         );
+        await logAction(req, {
+            action: "UPDATE",
+            module: "PERFORMANCE",
+            description: `Updated performance goal status to ${req.body.status}`,
+            targetId: performance._id,
+            newData: req.body
+        });
         res.status(200).json({
             success:true,
             message:"Goal status updated successfully",
@@ -259,6 +288,13 @@ const updatePerformance = async (
             req.body,
             req.user.company
         );
+        await logAction(req, {
+            action: "UPDATE",
+            module: "PERFORMANCE",
+            description: `Updated performance review details for cycle period: ${performance.reviewPeriod}`,
+            targetId: performance._id,
+            newData: req.body
+        });
         res.status(200).json({
             success:true,
             message:"Performance review updated successfully",
@@ -278,6 +314,11 @@ const deletePerformance = async (
     next
 )=>{
     try{
+        await logAction(req, {
+            action: "DELETE",
+            module: "PERFORMANCE",
+            description: `Deleted performance review cycle ID: ${req.params.id}`
+        });
         await performanceService.deletePerformance(
             req.params.id,
             req.user.company

@@ -19,18 +19,28 @@ const createAuditLog=async(data)=>{
 
 const getAuditLogs=async(
     companyId,
-    filters={}
+    filters={},
+    isSuperAdmin=false
 )=>{
     const {
         page=1,
         limit=20,
         module,
         action,
-        user
+        user,
+        company
     }=filters;
 
 
-    const query={company:companyId};
+    const query={};
+
+    if (isSuperAdmin) {
+        if (company) {
+            query.company = company;
+        }
+    } else {
+        query.company = companyId;
+    }
 
     if(module) query.module=module;
     if(action) query.action=action;
@@ -43,6 +53,7 @@ const getAuditLogs=async(
     const [logs,total]=await Promise.all([
         AuditLog.find(query)
             .populate("user","name email role")
+            .populate("company","name")
             .sort({createdAt:-1})
             .skip(skip)
             .limit(Number(limit)),
@@ -67,11 +78,11 @@ const getUserActivity=async(
     userId,
     companyId
 )=>{
-    return AuditLog.find({
-        user:userId,
-        company:companyId
-    })
+    const query = { user: userId };
+    if (companyId) query.company = companyId;
+    return AuditLog.find(query)
     .populate("user","name email role")
+    .populate("company","name")
     .sort({createdAt:-1});
 };
 
@@ -87,11 +98,11 @@ const getModuleHistory=async(
         );
 
 
-    return AuditLog.find({
-        module:module.toUpperCase(),
-        company:companyId
-    })
+    const query = { module: module.toUpperCase() };
+    if (companyId) query.company = companyId;
+    return AuditLog.find(query)
     .populate("user","name email role")
+    .populate("company","name")
     .sort({createdAt:-1});
 };
 

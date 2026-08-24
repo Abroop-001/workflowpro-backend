@@ -8,15 +8,9 @@ const createDocumentSchema=Joi.object({
     title:Joi.string().trim().min(2).max(100).required(),
     category:Joi.string().valid(...Object.values(DOCUMENT_CATEGORY)).required(),
     description:Joi.string().trim().max(500).allow("",null),
-    expiryDate:Joi.date().allow(null),
-    file:Joi.object({
-        originalName:Joi.string().required(),
-        fileName:Joi.string().required(),
-        filePath:Joi.string().required(),
-        mimeType:Joi.string().required(),
-        size:Joi.number().positive().required()
-    }).required()
+    expiryDate:Joi.date().allow(null)
 });
+
 
 const updateDocumentSchema=Joi.object({
     title:Joi.string().trim().min(2).max(100),

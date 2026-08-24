@@ -69,10 +69,24 @@ const logout = async (req, res, next) => {
     }
 };
 
+const changePassword = async (req, res, next) => {
+    try {
+        await authService.changePassword(req.user.id, req.body.newPassword);
+
+        res.status(200).json({
+            success:true,
+            message:"Password changed successfully"
+        });
+    } catch(error) {
+        next(error);
+    }
+};
+
 module.exports = {
     registerCompany,
     verifyEmail,
     login,
     refreshToken,
-    logout
+    logout,
+    changePassword
 };

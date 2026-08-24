@@ -5,8 +5,10 @@ const validate = require("../../middleware/validate.middleware");
 
 const {
     companyRegisterValidation,
-    loginValidation
+    loginValidation,
+    changePasswordValidation
 } = require("./auth.validation");
+const protect = require("../../middleware/auth.middleware");
 
 const {
     authLimiter
@@ -43,6 +45,13 @@ router.post(
 router.post(
     "/logout",
     authController.logout
+);
+
+router.post(
+    "/change-password",
+    protect,
+    validate(changePasswordValidation),
+    authController.changePassword
 );
 
 module.exports = router;
