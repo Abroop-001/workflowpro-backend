@@ -332,13 +332,13 @@ async(
 
     await checkManagerAccess(
         employeeId,
-        user
+        currentUser
     );
 
 
     return Payroll.find({
         employee:employeeId,
-        company:user.company
+        company:companyId
     })
     .sort({
         year:-1,
@@ -360,7 +360,7 @@ async(
     const payroll =
         await Payroll.findOne({
             _id:id,
-            company:user.company
+            company:companyId
         })
         .populate("employee");
 
@@ -373,12 +373,12 @@ async(
 
 
 
-    if(user.role==="EMPLOYEE"){
+    if(currentUser.role==="EMPLOYEE"){
 
         if(
             String(payroll.employee.user)
             !==
-            String(user.id)
+            String(currentUser.id || currentUser._id)
         ){
 
             throw new AppError(
@@ -392,11 +392,11 @@ async(
 
 
 
-    if(user.role==="MANAGER"){
+    if(currentUser.role==="MANAGER"){
 
         await checkManagerAccess(
             payroll.employee._id,
-            user
+            currentUser
         );
 
     }

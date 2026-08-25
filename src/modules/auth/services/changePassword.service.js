@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const AppError = require("../../../utils/AppError");
 
 const changePassword = async (userId, newPassword) => {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("+password");
     if (!user) {
         throw new AppError("User not found", 404);
     }
